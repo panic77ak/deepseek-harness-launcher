@@ -1,0 +1,67 @@
+name: build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install desktop shell dependencies
+        run: npm ci
+
+      # The dsh backend tree must be installed per-platform: its native
+      # optionalDependencies (e.g. node-addon-require-builtin-<platform>) are
+      # selected by npm on the target OS. Running it inside each matrix runner
+      # guarantees the packaged backend matches the artifact's platform.
+      - name: Prepare dsh backend (per-platform)
+        run: npm run prepare:backend
+
+      - name: Build Windows artifacts
+        if: matrix.os == 'windows-latest'
+        run: npm run dist:win
+        env:
+          # electron-builder downloads a prebuilt Electron + NSIS toolchain.
+          # No code signing is configured: artifacts are unsigned.
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Build macOS artifacts
+        if: matrix.os == 'macos-latest'
+        run: npm run dist:mac
+        env:
+          # Unsigned, un-notarized build (no Apple Developer ID in this repo).
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsh-launcher-${{ matrix.os }}
+          path: |
+            dist/*.exe
+            dist/*.exe.blockmap
+            dist/*.dmg
+            dist/*.zip
+            dist/*.dmg.blockmap
+          if-no-files-found: error

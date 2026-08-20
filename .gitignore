@@ -1,0 +1,21 @@
+# ------------------------------------------------------------------
+# PRIVACY: never commit user credentials or machine data.
+# DSH stores API keys / settings under the user's $DSH_HOME (~/.dsh).
+# That directory is OUTSIDE this repo and must never be copied in.
+# The `backend/` tree is re-installed from public npm packages only.
+# ------------------------------------------------------------------
+
+# dependencies & build output
+node_modules/
+backend/
+dist/
+release/
+out/
+*.log
+startup.log
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
