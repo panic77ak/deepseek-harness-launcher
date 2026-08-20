@@ -19,7 +19,15 @@
 </p>
 
 <p align="center">
-  <img src="assets/screenshot-main.png" alt="DSH Launcher 主界面" width="100%">
+  <img src="assets/screenshot-1.png" alt="DSH Launcher 界面" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/screenshot-2.png" alt="DSH Launcher 界面" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/screenshot-3.png" alt="DSH Launcher 界面" width="100%">
 </p>
 
 DSH Launcher 把 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的本地 Web GUI 装进原生桌面窗口。它**不修改、不复刻上游源码**：后端直接运行 npm 上发布的官方 `@deepseek-ai/dsh` 包，桌面壳负责启动它、等它就绪、再用一个原生窗口承载它的 Web 界面。
@@ -105,34 +113,7 @@ npm run dist:dir       # 仅生成未打包目录（调试用，较快）
 ```
 
 > 跨平台说明：electron-builder 打包**当前平台**的产物。macOS 的 dmg/zip 需在 macOS 上构建；
-> Windows 的 NSIS/portable 需在 Windows 上构建。建议用 GitHub Actions 矩阵分别出包（见下）。
-
-## GitHub Actions 自动出包
-
-`.github/workflows/release.yml` 用 `windows-latest` / `macos-latest` 矩阵自动产出双平台安装包：
-
-- **触发**：手动（Actions 页面 → Run workflow），或 push 带 `v*` 前缀的 tag（如 `v0.1.0`）。
-- **流程**：每个 runner 独立执行 `npm ci` → `npm run prepare:backend`（按平台安装后端原生依赖）
-  → 平台分支打包（Windows 走 `dist:win`，macOS 走 `dist:mac`）→ 上传 artifact。
-
-> 为什么 `prepare:backend` 必须在每个平台各自跑：后端依赖里的原生包
-> （如 `node-addon-require-builtin`）通过 npm 的 optionalDependencies 按平台选择，
-> 跨平台复用同一份 `backend/` 会装错原生二进制。
-
-> **macOS 签名/公证**：当前 CI 产出的是**未签名、未公证**的 dmg（仓库不配置
-> Apple Developer ID 与 notarization 密钥）。首次打开需「右键 → 打开」绕过 Gatekeeper。
-> 正式对外分发需另配 Apple 开发者证书与 notarization secrets——这是后续待办。
-
-## 更换应用图标
-
-`build/` 目录下的 `icon.ico`（Windows）、`icon.icns`（macOS）、`icon.png`（通用）由源图生成。要换图标：
-
-```powershell
-# Windows（PowerShell）
-powershell -ExecutionPolicy Bypass -File scripts/make-icons.ps1 -SourceImage <你的图片路径>
-```
-
-脚本会把源图居中裁剪成方形，生成全部三种格式。之后重新 `npm run dist:win` / `dist:mac` 即可。
+> Windows 的 NSIS/portable 需在 Windows 上构建。
 
 ## 环境变量 / 参数
 

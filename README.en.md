@@ -21,7 +21,15 @@
 </p>
 
 <p align="center">
-  <img src="assets/screenshot-main.png" alt="DSH Launcher main window" width="100%">
+  <img src="assets/screenshot-1.png" alt="DSH Launcher window" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/screenshot-2.png" alt="DSH Launcher window" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/screenshot-3.png" alt="DSH Launcher window" width="100%">
 </p>
 
 DSH Launcher wraps the local Web GUI of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) in a native desktop window. It does **not modify or re-implement upstream code**: the backend runs the official `@deepseek-ai/dsh` npm package, and the desktop shell only boots it, waits for it to become ready, and hosts its Web UI in a native window.
@@ -108,34 +116,6 @@ npm run dist:dir       # unpacked directory only (faster, for debugging)
 
 > Cross-platform note: electron-builder builds artifacts for the **current** platform.
 > macOS dmg/zip must be built on macOS; Windows NSIS/portable must be built on Windows.
-> Use the GitHub Actions matrix to build both (see below).
-
-## GitHub Actions Builds
-
-`.github/workflows/release.yml` builds both platforms with a `windows-latest` / `macos-latest` matrix:
-
-- **Trigger**: manually (Actions → Run workflow), or by pushing a `v*` tag (e.g. `v0.1.0`).
-- **Flow**: each runner runs `npm ci` → `npm run prepare:backend` (installs platform-native backend deps)
-  → platform build (Windows via `dist:win`, macOS via `dist:mac`) → upload artifact.
-
-> Why `prepare:backend` must run per-platform: backend dependencies include native packages
-> (e.g. `node-addon-require-builtin`) selected by npm's optionalDependencies per OS;
-> reusing one `backend/` tree across platforms would install the wrong native binaries.
-
-> **macOS signing/notarization**: current CI artifacts are **unsigned and un-notarized** (no Apple
-> Developer ID or notarization secrets configured). First open needs right-click → Open to bypass
-> Gatekeeper. Production distribution requires Apple certificates and notarization — a future TODO.
-
-## Changing the App Icon
-
-`build/icon.ico` (Windows), `build/icon.icns` (macOS), and `build/icon.png` (generic) are generated from a source image. To change the icon:
-
-```powershell
-# Windows (PowerShell)
-powershell -ExecutionPolicy Bypass -File scripts/make-icons.ps1 -SourceImage <path-to-image>
-```
-
-The script center-crops the source to a square and generates all three formats. Then rebuild with `npm run dist:win` / `dist:mac`.
 
 ## Environment Variables
 
