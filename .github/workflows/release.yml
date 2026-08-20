@@ -36,21 +36,28 @@ jobs:
       # optionalDependencies (e.g. node-addon-require-builtin-<platform>) are
       # selected by npm on the target OS. Running it inside each matrix runner
       # guarantees the packaged backend matches the artifact's platform.
+      # NODE_OPTIONS raises the heap cap: dsh's dependency tree (~450 packages)
+      # makes npm OOM on the default heap size.
       - name: Prepare dsh backend (per-platform)
         run: npm run prepare:backend
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
 
       - name: Build Windows artifacts
         if: matrix.os == 'windows-latest'
         run: npm run dist:win
         env:
-          # electron-builder downloads a prebuilt Electron + NSIS toolchain.
+          # electron-builder downloads a prebuilt Electron + NSIS toolchain
+          # from GitHub; GH_TOKEN avoids unauthenticated rate limits.
           # No code signing is configured: artifacts are unsigned.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
 
       - name: Build macOS artifacts
         if: matrix.os == 'macos-latest'
         run: npm run dist:mac
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Unsigned, un-notarized build (no Apple Developer ID in this repo).
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
 
