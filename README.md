@@ -9,13 +9,17 @@
 <p align="center"><sub>
   独立的社区开源项目，与深度求索（DeepSeek）不存在隶属、合作、授权或背书关系。<br>
   本仓库由社区独立维护，不含 DeepSeek Harness 上游官方团队成员参与。<br>
-  中文 · English（待补）
+  中文 · <a href="README.en.md">English</a>
 </sub></p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-2EA44F?style=flat" alt="MIT License"></a>
   <img src="https://img.shields.io/badge/Windows%20%7C%20macOS-4493F8?style=flat" alt="Supported platforms: Windows and macOS">
   <a href="https://github.com/panic77ak/deepseek-harness-launcher"><img src="https://img.shields.io/github/stars/panic77ak/deepseek-harness-launcher?style=flat&label=%E2%98%85&color=08C" alt="GitHub stars"></a>
+</p>
+
+<p align="center">
+  <img src="assets/screenshot-main.png" alt="DSH Launcher 主界面" width="100%">
 </p>
 
 DSH Launcher 把 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的本地 Web GUI 装进原生桌面窗口。它**不修改、不复刻上游源码**：后端直接运行 npm 上发布的官方 `@deepseek-ai/dsh` 包，桌面壳负责启动它、等它就绪、再用一个原生窗口承载它的 Web 界面。
