@@ -12,7 +12,7 @@
  */
 
 const { app, BrowserWindow, dialog, shell } = require('electron')
-const { spawn } = require('node:child_process')
+const { spawn, spawnSync } = require('node:child_process')
 const http = require('node:http')
 const net = require('node:net')
 const path = require('node:path')
@@ -38,6 +38,41 @@ const DEFAULT_PORT = Number(process.env.DSH_DESKTOP_PORT || 3080)
 const BOOT_TIMEOUT_MS = 120_000
 
 // ── backend discovery ────────────────────────────────────────────────────────
+
+/**
+ * Locate a real Node.js executable, preferring the system one.
+ *
+ * dsh's Win32 native directory picker spawns its dialog worker with
+ * `process.execPath` and expects plain-node semantics (COM + message pump).
+ * Running the backend on Electron's `ELECTRON_RUN_AS_NODE` shim breaks that
+ * worker, so we prefer the system `node` when present and only fall back to
+ * the bundled runtime when no Node is installed.
+ *
+ * @returns {{ execPath: string, runAsNode: boolean }} the runtime to use.
+ */
+function resolveNodeRuntime() {
+  // 1. An explicit override (DSH_DESKTOP_NODE) wins, for power users.
+  if (process.env.DSH_DESKTOP_NODE && fs.existsSync(process.env.DSH_DESKTOP_NODE)) {
+    return { execPath: process.env.DSH_DESKTOP_NODE, runAsNode: false }
+  }
+  // 2. System `node` on PATH (or common locations), with a version gate:
+  //    dsh requires ^22.19.0 || >=24.0.0.
+  const candidates = ['node', 'node.exe']
+  for (const candidate of candidates) {
+    const probe = spawnSync(candidate, ['--version'], { shell: false, windowsHide: true })
+    if (probe.status === 0 && probe.stdout) {
+      const version = probe.stdout.toString().trim().replace(/^v/, '')
+      const [major, minor] = version.split('.').map(Number)
+      if (major >= 24 || (major === 22 && minor >= 19)) {
+        return { execPath: candidate, runAsNode: false }
+      }
+      debug('system node found but too old:', version)
+    }
+  }
+  // 3. Fallback: the Electron binary itself as Node (no system Node needed),
+  //    with the known directory-picker caveat.
+  return { execPath: process.execPath, runAsNode: true }
+}
 
 /**
  * Locate the npm-installed dsh CLI entry.
@@ -99,24 +134,29 @@ let isQuitting = false
 /**
  * Start the dsh web backend child process.
  *
- * Runs the Electron executable itself as plain Node (ELECTRON_RUN_AS_NODE=1), so
- * the shipped app needs no separate Node.js installation. `--port 0` lets the OS
- * pick a free port; the actual port is parsed from the `dsh web:` readiness line.
+ * Prefers the system Node.js (so dsh's native directory picker works); falls
+ * back to the Electron binary as Node (`ELECTRON_RUN_AS_NODE=1`) when no
+ * system Node is installed. `--port 0` lets the OS pick a free port; the
+ * actual port is parsed from the `dsh web:` readiness line.
  *
  * @param {number} preferPort - port to try first (3080 default), or 0 for any free port.
  * @returns {Promise<number>} the port the backend actually bound.
  */
 async function startBackend(preferPort) {
   const bin = resolveBackendBin()
+  const runtime = resolveNodeRuntime()
+  debug('backend runtime:', runtime.execPath, 'runAsNode=', runtime.runAsNode)
   // --expose-internals lets dsh's HMR service reach Node internals on the
   // Electron-bundled runtime (the native fallback targets system Node ABIs).
-  const args = ['--expose-internals', bin, 'web']
+  const args = ['--expose-internals', bin, 'web', '--no-open']
   if (preferPort > 0) args.push('--port', String(preferPort))
   else args.push('--port', '0')
 
   // Inherit the user's environment so `$DSH_HOME`, proxies, PATH etc. work as usual.
-  const env = { ...process.env, ELECTRON_RUN_AS_NODE: '1' }
-  const child = spawn(process.execPath, args, {
+  const env = runtime.runAsNode
+    ? { ...process.env, ELECTRON_RUN_AS_NODE: '1' }
+    : { ...process.env }
+  const child = spawn(runtime.execPath, args, {
     env,
     cwd: process.cwd(),
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -221,11 +261,26 @@ function createWindow(url) {
   })
   mainWindow.webContents.on('render-process-gone', (event, details) => {
     debug('render-process-gone', JSON.stringify(details))
+    // A crashed renderer should never take the whole app (and backend) down.
+    // Reload the GUI in a fresh render process instead.
+    if (details.reason === 'crashed' || details.reason === 'oom') {
+      debug('reloading window after renderer crash')
+      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.reload()
+    }
   })
 
   mainWindow.loadURL(url)
   return mainWindow
 }
+
+// Disable GPU acceleration before the app is ready. On some Windows GPU
+// drivers / remote-desktop / VM setups the Chromium compositor crashes the
+// render process (observed as `render-process-gone` + backend exit -1); a
+// software-composited renderer is far more robust and costs nothing for this
+// UI's workload.
+app.disableHardwareAcceleration()
+app.commandLine.appendSwitch('disable-gpu-compositing')
+app.commandLine.appendSwitch('disable-gpu')
 
 // ── lifecycle ────────────────────────────────────────────────────────────────
 
