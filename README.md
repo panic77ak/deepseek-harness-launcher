@@ -30,6 +30,10 @@
   <img src="assets/screenshot-3.png" alt="DSH Launcher 界面" width="100%">
 </p>
 
+<p align="center">
+  <img src="assets/screenshot-4.png" alt="DSH Launcher 界面" width="100%">
+</p>
+
 DSH Launcher 把 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的本地 Web GUI 装进原生桌面窗口。它**不修改、不复刻上游源码**：后端直接运行 npm 上发布的官方 `@deepseek-ai/dsh` 包，桌面壳负责启动它、等它就绪、再用一个原生窗口承载它的 Web 界面。
 
 ## 下载与安装

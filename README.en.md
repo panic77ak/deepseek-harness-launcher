@@ -32,6 +32,10 @@
   <img src="assets/screenshot-3.png" alt="DSH Launcher window" width="100%">
 </p>
 
+<p align="center">
+  <img src="assets/screenshot-4.png" alt="DSH Launcher window" width="100%">
+</p>
+
 DSH Launcher wraps the local Web GUI of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) in a native desktop window. It does **not modify or re-implement upstream code**: the backend runs the official `@deepseek-ai/dsh` npm package, and the desktop shell only boots it, waits for it to become ready, and hosts its Web UI in a native window.
 
 ## Download & Install
