@@ -44,9 +44,9 @@ Official installers are available for Windows x64 and macOS (Apple Silicon). No 
 
 | Platform | Download | Install |
 | --- | --- | --- |
-| Windows x64 | [Download installer](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-Setup-0.1.0-x64.exe) | Run the NSIS installer and follow the prompts |
-| Windows x64 (portable) | [Download portable](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-Portable-0.1.0-x64.exe) | No install; double-click to run (first launch self-extracts for a few minutes) |
-| macOS arm64 (Apple Silicon) | [Download DMG](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-0.1.0-arm64.dmg) | Open the DMG and drag DSH Launcher into Applications |
+| Windows x64 | [Download installer](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-Setup-x64.exe) | Run the NSIS installer and follow the prompts |
+| Windows x64 (portable) | [Download portable](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-Portable-x64.exe) | No install; double-click to run (first launch self-extracts for a few minutes) |
+| macOS arm64 (Apple Silicon) | [Download DMG](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-arm64.dmg) | Open the DMG and drag DSH Launcher into Applications |
 
 > The macOS build is **unsigned and un-notarized**; first open needs right-click → Open to bypass Gatekeeper.
 > Intel Mac (x64) is not provided yet; please open an issue if you need it.

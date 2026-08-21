@@ -42,9 +42,9 @@ DSH Launcher 把 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harn
 
 | 平台 | 下载 | 安装方式 |
 | --- | --- | --- |
-| Windows x64 | [下载安装程序](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-Setup-0.1.0-x64.exe) | 运行 NSIS 安装程序并按提示完成安装 |
-| Windows x64（便携版） | [下载便携版](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-Portable-0.1.0-x64.exe) | 免安装，双击即用（首次启动自解压需几分钟） |
-| macOS arm64（Apple Silicon） | [下载 DMG](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-0.1.0-arm64.dmg) | 打开 DMG，将 DSH Launcher 拖入「应用程序」 |
+| Windows x64 | [下载安装程序](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-Setup-x64.exe) | 运行 NSIS 安装程序并按提示完成安装 |
+| Windows x64（便携版） | [下载便携版](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-Portable-x64.exe) | 免安装，双击即用（首次启动自解压需几分钟） |
+| macOS arm64（Apple Silicon） | [下载 DMG](https://github.com/panic77ak/deepseek-harness-launcher/releases/latest/download/DSH.Launcher-arm64.dmg) | 打开 DMG，将 DSH Launcher 拖入「应用程序」 |
 
 > macOS 版本**未签名、未公证**，首次打开需「右键 → 打开」绕过 Gatekeeper。
 > Intel Mac（x64）暂未提供，如有需要请提 issue。
