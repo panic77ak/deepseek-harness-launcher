@@ -7,7 +7,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -72,3 +72,46 @@ jobs:
             dist/*.zip
             dist/*.dmg.blockmap
           if-no-files-found: error
+
+  # Publishes a GitHub Release with both platforms' installers attached.
+  # Runs only for tag pushes (workflow_dispatch just builds and uploads
+  # artifacts for manual inspection).
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dsh-launcher-windows-latest
+          path: dist
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dsh-launcher-macos-latest
+          path: dist
+
+      - name: Create release and upload assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat > /tmp/release-notes.md <<'EOF'
+          ## 下载
+
+          安装包见本页面 Assets，按需选择：
+
+          - **Windows x64**：Setup（安装包）或 Portable（便携版）exe
+          - **macOS arm64（Apple Silicon）**：dmg 或 zip（未签名、未公证，首次打开需「右键 → 打开」）
+
+          DSH Launcher 是独立的社区项目，与深度求索不存在隶属、合作、授权或背书关系。
+          EOF
+          gh release create "${{ github.ref_name }}" \
+            dist/*.exe \
+            dist/*.dmg \
+            dist/*.zip \
+            --repo "${{ github.repository }}" \
+            --title "${{ github.ref_name }}" \
+            --notes-file /tmp/release-notes.md
