@@ -40,14 +40,16 @@ DSH Launcher wraps the local Web GUI of [DeepSeek Harness](https://github.com/de
 
 ## Download & Install
 
-> Current stage: installers are built by GitHub Actions and available from the Artifacts of each workflow run.
-> Official Releases will follow `v*` tags.
+Official installers are available for Windows x64 and macOS (Apple Silicon). No extra environment needed — download, install, done.
 
-| Platform | Artifact | Notes |
+| Platform | Download | Install |
 | --- | --- | --- |
-| Windows x64 | `DSH Launcher-Setup-0.1.0-x64.exe` | NSIS installer; starts instantly after install |
-| Windows x64 | `DSH Launcher-Portable-0.1.0-x64.exe` | No install; first launch self-extracts for a few minutes |
-| macOS arm64 / x64 | `DSH Launcher-0.1.0-*.dmg` / `-*.zip` | Unsigned, un-notarized; first open needs right-click → Open |
+| Windows x64 | [Download installer](https://github.com/panic77ak/deepseek-harness-launcher/releases/download/v0.1.0/DSH.Launcher-Setup-0.1.0-x64.exe) | Run the NSIS installer and follow the prompts |
+| Windows x64 (portable) | [Download portable](https://github.com/panic77ak/deepseek-harness-launcher/releases/download/v0.1.0/DSH.Launcher-Portable-0.1.0-x64.exe) | No install; double-click to run (first launch self-extracts for a few minutes) |
+| macOS arm64 (Apple Silicon) | [Download DMG](https://github.com/panic77ak/deepseek-harness-launcher/releases/download/v0.1.0/DSH.Launcher-0.1.0-arm64.dmg) | Open the DMG and drag DSH Launcher into Applications |
+
+> The macOS build is **unsigned and un-notarized**; first open needs right-click → Open to bypass Gatekeeper.
+> Intel Mac (x64) is not provided yet; please open an issue if you need it.
 
 No extra environment needed: the backend runs on the Node.js runtime bundled inside the app, so **Node.js is not required** on the target machine.
 
